@@ -1,0 +1,82 @@
+---
+title: "Data 607 Project 4"
+author: "Tyler Graham"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## Project 4
+
+## Dataset Setup Instructions
+
+To replicate this project:
+
+1. Clone GitHub repo: https://github.com/tcgraham-data/data-607-project-4  
+2. Unzip the compressed datasets in the `data/` folder  
+3. Rename the extracted folders to `spam/` and `ham/` for consistency  
+
+### Manual Extraction (one-time setup)
+
+Content setup **after** data extraction:
+
+# Required directory layout:
+# data/
+# ├── spam/          ← extracted from spam.tar.bz2
+# └── ham/           ← extracted from easy_ham.tar.bz2
+# ├── tg-project4.Rmd   ← Markdown lives here
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#install.packages("tm")
+#install.packages("fs")
+#install.packages("e1071")
+#install.packages("caret")
+
+library(tidyverse)
+library(tidytext)
+library(textdata)
+library(tm)
+library(fs)
+library(e1071)       # for naiveBayes()
+library(caret)       # for evaluation
+library(stringr)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r paths, echo=TRUE, message=FALSE, warning=FALSE}
+# Define paths
+spam_path <- "data/spam"
+ham_path <- "data/ham"
+
+# Load email files into a dataframe
+read_emails <- function(path, label) {
+  files <- dir_ls(path)
+  tibble(
+    text = map_chr(files, ~ read_file(.x)),
+    label = label
+  )
+}
+
+spam_df <- read_emails(spam_path, "spam")
+ham_df  <- read_emails(ham_path, "ham")
+email_df <- bind_rows(spam_df, ham_df) %>% 
+  mutate(id = row_number())
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
